@@ -1,0 +1,185 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Agenda API
+# during dev, should point to your local machine
+host: localhost:8000
+# basePath prefixes all resource paths
+basePath: /
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /users:
+    x-swagger-router-controller: user
+    get:
+      description: Get all user of the system
+      # used as the method name of the controller
+      operationId: getAllUsers
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Create user in the system
+      # used as the method name of the controller
+      operationId: createUser
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: gender
+        in: formData
+        description: contact gender
+        required: true
+        type: string
+        enum: [male,female]
+      - name: title
+        in: formData
+        description: contact title
+        required: true
+        type: string
+        minLength: 2
+        maxLength: 15
+      - name: first
+        in: formData
+        description: contact firstname
+        required: true
+        type: string
+        minLength: 2
+        maxLength: 50
+      - name: last
+        in: formData
+        description: contact lastname
+        required: true
+        type: string
+        minLength: 2
+        maxLength: 50
+      - name: email
+        in: formData
+        description: contact lastname
+        required: true
+        type: string
+        pattern: ^[\w-(_|-|\.)]+@(\w+)(\.\w+)+$
+      - name: phone
+        in: formData
+        description: contact phone
+        required: true
+        type: string
+        minLength: 6
+        maxLength: 15
+        pattern: ^[0-9|+|\-|(|)]+$
+      - name: cell
+        in: formData
+        description: contact cell
+        required: true
+        type: string
+        minLength: 6
+        maxLength: 15
+        pattern: ^[0-9|+|\-|(|)]+$
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/User"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /user/{id}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: user
+    parameters:
+      - name: id
+        in: path
+        description: the id of the user to retrieve
+        required: true
+        type: string
+    get:
+      description: Get a specific user by id
+      # used as the method name of the controller
+      operationId: getUser
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/User"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Delete a specific user by id
+      # used as the method name of the controller
+      operationId: deleteUser
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+            required:
+            - id
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  User:
+    properties:
+      id:
+        type: number
+      gender:
+        type: string
+      title:
+        type: string
+      first:
+        type: string
+      last:
+        type: string
+      email:
+        type: string
+      username:
+        type: string
+      registered:
+        type: number
+      dob:
+        type: number
+      phone:
+        type: string
+      cell:
+        type: string
+      picture:
+        type: string
+  HelloWorldResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
